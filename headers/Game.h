@@ -20,6 +20,8 @@ class Game{
         sf::Sprite sky;
         sf::Texture grassTex;
         sf::Sprite grass;
+        sf::Texture forestTex;
+        sf::Sprite forest;
         sf::Texture bloodTex;
         sf::Sprite blood;
 

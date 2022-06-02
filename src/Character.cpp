@@ -107,7 +107,7 @@ void Character::updateHp(float newHp){
 
 bool Character::canAttack(){
     
-    if (this->clock.getElapsedTime().asMilliseconds() < 100){
+    if (this->clock.getElapsedTime().asMilliseconds() < 300){
         return false;
     } else {
         this->clock.restart();

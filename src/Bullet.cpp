@@ -12,9 +12,10 @@ Bullet::Bullet(bool enemy, float pos_x, float pos_y, float dir_x, float dir_y, f
         this->shape.setPosition(pos_x, pos_y);
         this->shape.setScale(sf::Vector2f(0.5f, 0.5f));
     } else {
-        this->texture.loadFromFile("images/bullet.png");
+        this->texture.loadFromFile("images/flower.png");
         this->shape.setTexture(this->texture);
         this->shape.setPosition(pos_x, pos_y);
+        this->shape.setScale(sf::Vector2f(0.7f, 0.7f));
     }
 	
 	

@@ -33,10 +33,10 @@ void Game::initWindow(){
 }
 
 void Game::initWorld(){
-    this->skyTex.loadFromFile("images/sky1.png");
-    this->grassTex.loadFromFile("images/ground2.png");
+    this->skyTex.loadFromFile("images/sky4.png");
+    this->grassTex.loadFromFile("images/grass.png");
+    this->forestTex.loadFromFile("images/trees.png");
     this->bloodTex.loadFromFile("images/damage.png");
-	this->bulletTex.loadFromFile("images/bullet.png");
 
     this->blood.setTexture(this->bloodTex);
     this->blood.setScale(sf::Vector2f(1.2f, 1.2f));
@@ -44,11 +44,16 @@ void Game::initWorld(){
 
     this->grassTex.setRepeated(true);
     this->skyTex.setRepeated(true);
+    this->forestTex.setRepeated(true);
 	this->sky.setTexture(this->skyTex);
 	this->grass.setTexture(this->grassTex);
+	this->forest.setTexture(this->forestTex);
+    this->forest.setColor(sf::Color(255, 255, 255, 210));
+    
 
-    this->sky.setScale(sf::Vector2f(0.3f, 0.3f));
-    this->grass.setPosition(sf::Vector2f(0.f, 415.f));
+    // this->sky.setScale(sf::Vector2f(1.3f, 1.3f));
+    this->grass.setPosition(sf::Vector2f(0.f, 65.f));
+    this->forest.setPosition(sf::Vector2f(0.f, 2.f));
 
     this->parallaxShader.loadFromMemory(
         "uniform float offset;"
@@ -94,17 +99,17 @@ Game::~Game(){
 
 void Game::updatePollEvents(){
     while (this->window->pollEvent(this->event))
-        {
+        { 
             switch (this->event.type)
-            {
-                case sf::Event::Closed:
-                    this->window->close();
-                    break;
-                case sf::Event::KeyPressed:
-                    if(this->event.key.code == sf::Keyboard::Escape)
+                {
+                    case sf::Event::Closed:
                         this->window->close();
-                    break;
-            }
+                        break;
+                    case sf::Event::KeyPressed:
+                        if(this->event.key.code == sf::Keyboard::Escape)
+                            this->window->close();
+                        break;
+                }
         }        
 }
 
@@ -162,7 +167,7 @@ void Game::updateInput(){
             this->bullets.push_back(
                 new Bullet(false,
                 this->character->sprite.getPosition().x + this->character->sprite.getGlobalBounds().width/2.f, 
-                this->character->sprite.getPosition().y + 20.f, dir_x, 0.f, 5.f)
+                this->character->sprite.getPosition().y + 50.f, dir_x, 0.f, 5.f)
             );
         }
 	}
@@ -213,7 +218,7 @@ void Game::updateHp(){
 void Game::createObstacle(){
     int index = int(this->offset * 1000 / 20) + 300;
 
-    if (this->obstacles.find(index) == obstacles.end()){
+    if ((this->obstacles.find(index) == obstacles.end()) && (index > 300)){
         int v1 = rand() % 300 + index;
         Obstacle *obstacle = new Obstacle(v1 + 400, 422.f);
         this->obstacles.insert(std::pair<int, Obstacle*>(index,obstacle));
@@ -223,7 +228,7 @@ void Game::createObstacle(){
 void Game::createEnemy(){
     int index = int(this->offset * 1000 / 20) + 300;
 
-    if (this->enemies.find(index) == enemies.end()){
+    if ((this->enemies.find(index) == enemies.end()) && (index > 300)){
         int x = rand() % 300 + index;
         int y = rand() % 100 + 170;
         Enemy *enemy = new Enemy(x + 400, y);
@@ -282,6 +287,8 @@ void Game::update(){
 void Game::renderBackground(){
     this->parallaxShader.setUniform("offset", this->offset / 20 * 100);
     this->window->draw(this->sky, &this->parallaxShader);
+    this->parallaxShader.setUniform("offset", this->offset / 10  * 100);
+    this->window->draw(this->forest, &this->parallaxShader);
     this->parallaxShader.setUniform("offset", this->offset / 2  * 100);
     this->window->draw(this->grass, &this->parallaxShader);
 }
@@ -329,7 +336,6 @@ void Game::renderBullets(){
 void Game::renderCharacter(){
     this->character->render(*this->window);
     this->character->applyGravitationForce();
-
 }
 
 void Game::render(){
@@ -340,8 +346,8 @@ void Game::render(){
     this->renderObstacles();
     this->renderEnemies();
     this->renderBlood();
-    this->renderBullets();
     this->renderCharacter();
+    this->renderBullets();
     this->window->display();
 }
 
@@ -373,9 +379,7 @@ void Game::run(){
                                     this->window->close();
                                 break;
                         }
-                    
                 }
-
         }
     }
 }
