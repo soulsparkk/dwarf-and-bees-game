@@ -3,15 +3,16 @@
 
 Character::Character(){
     this->movementSpeed = 5.0f;
-    this->grassY = 495.0f;
-    this->gravitationForce = 0.4f;
+    this->grassY = 930.0f;
+    this->gravitationForce = 6.5f;
     this->isInTheAir = false;
     this->isGettingDamage = false;
     this->isFalling = false;
     this->isLookingRight = true;
+    this->attackCooldown = 200;
     this->initTexture();
     this->initSprite();
-    this->hp = 10000;
+    this->hp = 100;
     this->clock.restart();
 }
 
@@ -53,10 +54,10 @@ void Character::update(){
 }
 
 void Character::initSprite(){
-    this->scaleCoeff = 0.6f;
+    this->scaleCoeff = 1.2f;
     this->sprite.setTexture(this->texture);
     this->sprite.setScale(sf::Vector2f(this->scaleCoeff, this->scaleCoeff));
-    this->sprite.setPosition(sf::Vector2f(400.0f - this->texture.getSize().x / 2 * this->scaleCoeff, this->grassY - this->texture.getSize().y * this->scaleCoeff));
+    this->sprite.setPosition(sf::Vector2f(960.0f - this->texture.getSize().x / 2 * this->scaleCoeff, this->grassY - this->texture.getSize().y * this->scaleCoeff));
 }
 
 void Character::initTexture(){
@@ -82,7 +83,7 @@ void Character::applyGravitationForce(){
 
     if (this->isInTheAir){
         if (this->sprite.getPosition().y < this->grassY){
-            sprite.move(sf::Vector2f(0.f, this->gravitationForce * 10.f));
+            sprite.move(sf::Vector2f(0.f, this->gravitationForce));
         }
         if (!sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
             this->isFalling = true;
@@ -107,7 +108,7 @@ void Character::updateHp(float newHp){
 
 bool Character::canAttack(){
     
-    if (this->clock.getElapsedTime().asMilliseconds() < 300){
+    if (this->clock.getElapsedTime().asMilliseconds() < this->attackCooldown){
         return false;
     } else {
         this->clock.restart();

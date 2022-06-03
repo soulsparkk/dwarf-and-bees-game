@@ -6,6 +6,7 @@
 #include <Bullet.h>
 #include <Enemy.h>
 
+
 class Game{
     private:
         sf::RenderWindow* window;
@@ -28,7 +29,7 @@ class Game{
         sf::Texture bulletTex;
 
         sf::Font font;
-
+        int beesCount;
         sf::Text score;
         sf::Text hp;
         sf::Text GameOver;
@@ -74,4 +75,5 @@ class Game{
         void renderBlood();
         void renderBullets();
         void initWorld();
+        void endGame();
 };

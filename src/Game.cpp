@@ -2,33 +2,33 @@
 
 void Game::initVariables(){
     this->window = nullptr;
-    
 }
 void Game::initWindow(){
     const sf::String title = "My game";
-    this->videoMode.height = 600;
-    this->videoMode.width = 800;
+    this->videoMode.height = 1080;
+    this->videoMode.width = 1920;
     this->window = new sf::RenderWindow(this->videoMode, title, sf::Style::Titlebar | sf::Style::Close);
     this->window->setFramerateLimit(40);
     this->window->setVerticalSyncEnabled(false);
 
     this->isGameEnded = false;
+    this->beesCount = 0;
 
     this->font.loadFromFile("fonts/font.TTF");
     this->score.setFont(this->font);
-    this->score.setCharacterSize(48);
+    this->score.setCharacterSize(100);
     this->score.setFillColor(sf::Color::Black);
     this->score.setPosition(sf::Vector2f(5.f, 0.f));
 
     this->hp.setFont(this->font);
-    this->hp.setCharacterSize(48);
+    this->hp.setCharacterSize(100);
     this->hp.setFillColor(sf::Color::Red);
-    this->hp.setPosition(sf::Vector2f(590.f, 0.f));
+    this->hp.setPosition(sf::Vector2f(1480.f, 0.f));
 
     this->GameOver.setFont(this->font);
-    this->GameOver.setCharacterSize(60);
+    this->GameOver.setCharacterSize(150);
     this->GameOver.setFillColor(sf::Color::Red);
-    this->GameOver.setPosition(sf::Vector2f(200.f, 280.f));
+    this->GameOver.setPosition(sf::Vector2f(470.f, 450.f));
     this->GameOver.setString("Game Over");
 }
 
@@ -39,21 +39,27 @@ void Game::initWorld(){
     this->bloodTex.loadFromFile("images/damage.png");
 
     this->blood.setTexture(this->bloodTex);
-    this->blood.setScale(sf::Vector2f(1.2f, 1.2f));
-    this->blood.setPosition(sf::Vector2f(20.f,0.f));
+    this->blood.setScale(sf::Vector2f(2.3f, 2.3f));
+    this->blood.setPosition(sf::Vector2f(250.f,0.f));
+
+    this->skyTex.setRepeated(true);
+	this->sky.setTexture(this->skyTex);
+	this->sky.setScale(sf::Vector2f(2.4f, 2.4f));
+    this->sky.setTextureRect(sf::IntRect(0, 0, 1920, 1080));
 
     this->grassTex.setRepeated(true);
-    this->skyTex.setRepeated(true);
-    this->forestTex.setRepeated(true);
-	this->sky.setTexture(this->skyTex);
 	this->grass.setTexture(this->grassTex);
+    this->grass.setScale(sf::Vector2f(2.4f, 1.0f));
+    this->grass.setTextureRect(sf::IntRect(0, 0, 1920, 1080));
+
+    this->forestTex.setRepeated(true);
 	this->forest.setTexture(this->forestTex);
     this->forest.setColor(sf::Color(255, 255, 255, 210));
+    this->forest.setTextureRect(sf::IntRect(0, 0, 1920, 1080));
+    this->forest.setScale(sf::Vector2f(2.4f, 2.4f));
     
-
-    // this->sky.setScale(sf::Vector2f(1.3f, 1.3f));
-    this->grass.setPosition(sf::Vector2f(0.f, 65.f));
-    this->forest.setPosition(sf::Vector2f(0.f, 2.f));
+    this->grass.setPosition(sf::Vector2f(0.f, 500.f));
+    this->forest.setPosition(sf::Vector2f(0.f, -200.f));
 
     this->parallaxShader.loadFromMemory(
         "uniform float offset;"
@@ -88,7 +94,6 @@ Game::Game(){
     this->initWorld();
     this->initEnemies();
     this->initCharacter();
-    
 }
 
 Game::~Game(){
@@ -130,9 +135,9 @@ void Game::updateInput(){
         for (auto const& x : this->enemies){
             x.second->sprite.move(sf::Vector2f(5.f,0.f));
         }
-        // for (auto const& bullet : this->bullets){
-        //     bullet->shape.move(sf::Vector2f(1.7f,0.f));
-        // }
+        for (auto const& bullet : this->bullets){
+            bullet->shape.move(sf::Vector2f(4.0f,0.f));
+        }
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
@@ -145,13 +150,13 @@ void Game::updateInput(){
         for (auto const& x : this->enemies){
             x.second->sprite.move(sf::Vector2f(-5.f,0.f));
         }
-        // for (auto const& bullet : this->bullets){
-        //     bullet->shape.move(sf::Vector2f(-1.7f,0.f));
-        // }
+        for (auto const& bullet : this->bullets){
+            bullet->shape.move(sf::Vector2f(-4.f,0.f));
+        }
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && (!this->character->isFalling)){
         if (this->character->sprite.getGlobalBounds().top >= 100){
-            this->character->move(0.f, -2.00001f);
+            this->character->move(0.f, -4.0f);
             this->character->isInTheAir = true;
         } else {
             this->character->isInTheAir = true;
@@ -167,20 +172,15 @@ void Game::updateInput(){
             this->bullets.push_back(
                 new Bullet(false,
                 this->character->sprite.getPosition().x + this->character->sprite.getGlobalBounds().width/2.f, 
-                this->character->sprite.getPosition().y + 50.f, dir_x, 0.f, 5.f)
+                this->character->sprite.getPosition().y + 50.f, dir_x, 0.f, 10.f)
             );
         }
 	}
-    
-
 }
 
-void Game::updateMousePos(){
-    this->mousePosWindow = sf::Mouse::getPosition(*this->window);
-}
 
 void Game::updateScore(){
-    this->score.setString("Score:" + std::to_string(int(this->offset * 1000)));
+    this->score.setString("Score:" + std::to_string(int(this->offset * 1000) + beesCount * 100));
 }
 
 void Game::updateHp(){
@@ -202,7 +202,7 @@ void Game::updateHp(){
                 bullet->isAffected = true;
                 hp -= 1;
                 this->character->isGettingDamage = true;
-                break;
+                // break;
             }
         }
     }
@@ -212,26 +212,25 @@ void Game::updateHp(){
     if (this->character->getHp() <= 0){
         this->isGameEnded = true;
     }
-
 }
 
 void Game::createObstacle(){
-    int index = int(this->offset * 1000 / 20) + 300;
+    int index = int(this->offset * 1000 / 20) + 500;
 
-    if ((this->obstacles.find(index) == obstacles.end()) && (index > 300)){
-        int v1 = rand() % 300 + index;
-        Obstacle *obstacle = new Obstacle(v1 + 400, 422.f);
+    if ((this->obstacles.find(index) == obstacles.end()) && (index > 500)){
+        int v1 = rand() % 500 + index;
+        Obstacle *obstacle = new Obstacle(v1 + 960, 825.f);
         this->obstacles.insert(std::pair<int, Obstacle*>(index,obstacle));
     } 
 }
 
 void Game::createEnemy(){
-    int index = int(this->offset * 1000 / 20) + 300;
+    int index = int(this->offset * 1000 / 20) + 500;
 
-    if ((this->enemies.find(index) == enemies.end()) && (index > 300)){
-        int x = rand() % 300 + index;
-        int y = rand() % 100 + 170;
-        Enemy *enemy = new Enemy(x + 400, y);
+    if ((this->enemies.find(index) == enemies.end()) && (index > 500)){
+        int x = rand() % 1000 + index;
+        int y = rand() % 240 + 408;
+        Enemy *enemy = new Enemy(x + 960, y);
         this->enemies.insert(std::pair<int, Enemy*>(index,enemy));
     } 
 }
@@ -248,6 +247,10 @@ void Game::updateEnemies()
 {
 	for (auto const& x : this->enemies)
     {
+        if (!x.second->isAlive() && !x.second->isCounted){
+            this->beesCount += 1;
+            x.second->isCounted = true;
+        }
         if (x.second->isInWindow() && x.second->isAlive()){
             if (x.second->canAttack()){
                 float x1 = x.second->getBounds().left;
@@ -259,10 +262,10 @@ void Game::updateEnemies()
             int hp = x.second->getHp();
             for (auto *bullet : this->bullets)
             {
-                if (bullet->isInWindow() && !bullet->enemy){
+                if (bullet->isInWindow() && !bullet->enemy && !bullet->isAffected){
                     if (x.second->getBounds().intersects(bullet->getBounds())){
                         bullet->isAffected = true;
-                        hp -= 1;
+                        hp -= 10;
                         x.second->updateHp(hp);
                     }
                 }
@@ -275,7 +278,6 @@ void Game::update(){
     this->updateCharacter();
     this->updatePollEvents();
     this->updateInput();
-    this->updateMousePos();
     this->updateEnemies();
     this->updateScore();
     this->updateHp();
@@ -299,7 +301,7 @@ void Game::renderEnemies(){
         if (x.second->isInWindow() && x.second->isAlive()){
                 this->window->draw(x.second->sprite);
                 x.second->hpText.setString(std::to_string(int(x.second->getHp())));
-                x.second->hpText.setPosition(sf::Vector2f(x.second->getBounds().left + 35, x.second->getBounds().top - 50));
+                x.second->hpText.setPosition(sf::Vector2f(x.second->getBounds().left + 55, x.second->getBounds().top - 50));
                 this->window->draw(x.second->hpText);
         }
     }
@@ -352,17 +354,8 @@ void Game::render(){
 }
 
 
-
-
-void Game::run(){
-    while (this->window->isOpen())
-    {
-        if (!this->isGameEnded){
-            this->update();
-            this->render();
-        }
-        else {
-            this->window->clear();
+void Game::endGame(){
+    this->window->clear();
             this->window->draw(this->GameOver);
             this->score.setColor(sf::Color::Red);
             this->window->draw(this->score);
@@ -380,6 +373,17 @@ void Game::run(){
                                 break;
                         }
                 }
+}
+
+void Game::run(){
+    while (this->window->isOpen())
+    {
+        if (!this->isGameEnded){
+            this->update();
+            this->render();
+        }
+        else {
+            this->endGame();
         }
     }
 }

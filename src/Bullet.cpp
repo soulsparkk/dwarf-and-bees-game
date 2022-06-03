@@ -10,12 +10,12 @@ Bullet::Bullet(bool enemy, float pos_x, float pos_y, float dir_x, float dir_y, f
         this->texture.loadFromFile("images/bullet21.png");
         this->shape.setTexture(this->texture);
         this->shape.setPosition(pos_x, pos_y);
-        this->shape.setScale(sf::Vector2f(0.5f, 0.5f));
+        this->shape.setScale(sf::Vector2f(0.8f, 0.8f));
     } else {
         this->texture.loadFromFile("images/flower.png");
         this->shape.setTexture(this->texture);
         this->shape.setPosition(pos_x, pos_y);
-        this->shape.setScale(sf::Vector2f(0.7f, 0.7f));
+        this->shape.setScale(sf::Vector2f(1.f, 1.f));
     }
 	
 	
@@ -46,7 +46,7 @@ void Bullet::render(sf::RenderTarget * target)
 
 
 bool Bullet::isInWindow(){
-    if (this->getBounds().left < 800.f && this->getBounds().left + this->getBounds().width > 0.f){
+    if (this->getBounds().left < 1920.f && this->getBounds().left + this->getBounds().width > 0.f){
         return true;
     } else {
         return false;

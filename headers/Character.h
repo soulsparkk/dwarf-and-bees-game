@@ -5,12 +5,11 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
-#include <SFML/Audio.hpp>
 
 class Character{
     private:     
 
-        float attackCooldown;
+        int attackCooldown;
         float grassY;
         float gravitationForce;
         
@@ -58,14 +57,4 @@ class Character{
         void jump();
 };
 
-
-
-// class Player: public Character{
-//     public:
-//         Player();
-// };
-
-// class Enemy: public Character{
-
-// };
 

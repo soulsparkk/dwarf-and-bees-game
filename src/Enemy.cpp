@@ -2,9 +2,10 @@
 
 Enemy::Enemy(float x, float y){
     this->hp = 100;
+    this->isCounted = false;
     this->initTexture();
     this->sprite.setTexture(this->texture);
-    this->sprite.setScale(0.5f, 0.5f);
+    this->sprite.setScale(0.8f, 0.8f);
     this->sprite.setPosition(sf::Vector2f(x, y));
 
     this->font.loadFromFile("fonts/font.TTF");
@@ -35,7 +36,7 @@ void Enemy::updateHp(int newHp){
 }
 
 bool Enemy::isInWindow(){
-    if (this->getBounds().left < 800.f && this->getBounds().left + this->getBounds().width > 0.f){
+    if (this->getBounds().left < 1920.f && this->getBounds().left + this->getBounds().width > 0.f){
         return true;
     } else {
         return false;

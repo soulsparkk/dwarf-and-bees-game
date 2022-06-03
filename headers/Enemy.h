@@ -22,4 +22,5 @@ class Enemy{
         bool isInWindow();
         bool canAttack();
         bool isAlive();
+        bool isCounted;
 };
